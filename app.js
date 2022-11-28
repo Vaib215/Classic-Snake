@@ -31,55 +31,55 @@ class Game {
         document.querySelector('.game-grid.head').style.transform = 'rotateZ(' + this.rotation + 'deg)'
         document.addEventListener('keydown', this.changeDirection)
         this.addFood();
+        this.collisionInterval = setInterval(this.checkCollision, 0.1)
         this.moveInterval = setInterval(this.move, 150)
-        this.collisionInterval = setInterval(this.checkCollision, 50)
     }
 
-    update = (prevPosX = this.positionX, posX = this.positionX, prevPosY = this.positionY, posY = this.positionY) => {
-        this.grids[prevPosY * scale + prevPosX].classList.remove("head")
+    update = (prevPosX = this.positionX,prevPosY = this.positionY) => {
+        this.grids[prevPosY * scale + prevPosX]?.classList.remove("head")
         this.body.push([prevPosX, prevPosY])
+        this.grids[this.positionY * scale + this.positionX].style.setProperty('--rotation',this.rotation)
+        this.grids[this.positionY * scale + this.positionX]?.classList.add("head")
         this.grids[this.body[0][1] * scale + this.body[0][0]]?.classList.remove("body")
         this.body.shift()
-        this.grids[this.body[this.body.length - 1][1] * scale + this.body[this.body.length - 1][0]].classList.add("body")
+        this.grids[this.body[this.body.length - 1][1] * scale + this.body[this.body.length - 1][0]]?.classList.add("body")
         this.grids.forEach(e => {
             e.style.removeProperty("transform")
         })
-        this.grids[this.positionY * scale + this.positionX].classList.add("head")
-        this.grids[posY * scale + posX].style.transform = 'rotateZ(' + this.rotation + 'deg)'
         startBtn.innerHTML = "Score: " + this.count
     }
 
     changeDirection = (e) => {
         if (this.direction !== "down" && e.key === "ArrowUp") {
             this.direction = "up"
-            this.rotation = "0"
+            this.rotation = "0deg"
         }
         if (this.direction !== "up" && e.key === "ArrowDown") {
             this.direction = "down"
-            this.rotation = "180"
+            this.rotation = "180deg"
         }
         if (this.direction !== "left" && e.key === "ArrowRight") {
             this.direction = "right"
-            this.rotation = "90"
+            this.rotation = "90deg"
         }
         if (this.direction !== "right" && e.key === "ArrowLeft") {
             this.direction = "left"
-            this.rotation = "270"
+            this.rotation = "270deg"
         }
     }
 
     move = () => {
         if (this.direction === "up") {
-            this.update(this.positionX, this.positionX, this.positionY--, this.positionY)
+            this.update(this.positionX, this.positionY--)
         }
         else if (this.direction === "down") {
-            this.update(this.positionX, this.positionX, (this.positionY++), this.positionY)
+            this.update(this.positionX, (this.positionY++))
         }
         else if (this.direction === "right") {
-            this.update((this.positionX++), this.positionX, this.positionY, this.positionY)
+            this.update(this.positionX++, this.positionY)
         }
         else if (this.direction === "left") {
-            this.update((this.positionX--), this.positionX, this.positionY, this.positionY)
+            this.update(this.positionX--, this.positionY)
         }
     }
 
@@ -89,13 +89,12 @@ class Game {
 
     addFood = () => {
         document.querySelector(".game-grid.food")?.classList.remove("food")
-        this.food = new Food();
-        const foodGrid = this.grids[this.food.y * scale + this.food.x]
-        if (foodGrid.classList.contains("head") || foodGrid.classList.contains("body")) {
-            this.addFood()
-        } else {
-            foodGrid.classList.add("food")
-        }
+        let foodGrid;
+        do{
+            this.food = new Food();
+            foodGrid = this.grids[this.food.y * scale + this.food.x]
+        }while(foodGrid.classList.contains("head") || foodGrid.classList.contains("body"));
+        foodGrid.classList.add("food")
     }
 
     checkFoodCollison = () => {
@@ -109,14 +108,24 @@ class Game {
 
     checkCollision = () => {
         this.checkFoodCollison()
-        this.body.forEach(e => {
-            if (e[0] === this.positionX && e[1] === this.positionY) {
-                gameOver()
-                return
-            }
-        })
-        if (this.positionX < 0 || this.positionX >= scale || this.positionY < 0 || this.positionY >= scale) {
-            gameOver()
+        if(document.querySelector('.game-grid.body.head')!==null){
+            gameOver();
+            return;
+        }
+        if(this.direction==="left" && this.body[this.body.length-1][0]===1){
+            gameOver();
+            return
+        }
+        if(this.direction==="right" && this.body[this.body.length-1][0]===scale-2){
+            gameOver();
+            return
+        }
+        if(this.direction==="up" && this.body[this.body.length-1][1]===1){
+            gameOver();
+            return
+        }
+        if(this.direction==="down" && this.body[this.body.length-1][1]===scale-2){
+            gameOver();
             return
         }
     }
@@ -131,8 +140,8 @@ gameOver = () => {
         startBtn.innerHTML = 'Start Game'
     }, 1000);
     document.removeEventListener('keydown', gamepad.changeDirection)
-    clearInterval(gamepad.collisionInterval)
     clearInterval(gamepad.moveInterval)
+    clearInterval(gamepad.collisionInterval)
     startBtn.disabled = false
     return
 }
@@ -145,7 +154,7 @@ startBtn.addEventListener('click', () => {
     gamepad.positionX = 0
     gamepad.positionY = 0
     gamepad.direction = null
-    gamepad.rotation = "0"
+    gamepad.rotation = "0deg"
     gamepad.body = []
     gamepad.add()
     gamepad.add()

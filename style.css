@@ -31,23 +31,28 @@ body{
 }
 
 .game-grid {
-    background: #fff;
+    transform: rotateZ(0);
+    background: white;
 }
 
 .game-grid.head, .game-grid.food{
     position: relative;
 }
 
+.game-grid.head {
+    transform: rotateZ(var(--rotation));
+}
+
 .game-grid.head::after{
     content: '';
     position: absolute;
-    background-color: #fff;
     inset:0;
     z-index: -1;
 }
 
 .game-grid.head::before{
-    content:'* *';
+    content:'👁️👁️';
+    font-size: 10px;
     border-radius: 50% 50% 0 0;
     background: #666;
     position: absolute;
@@ -57,19 +62,21 @@ body{
 .game-grid.body{
     background-color: #666;
     z-index: 2;
-    border-radius: 8px;
 }
 
 .game-grid.food::after{
-    content: '';
+    content: '🍎';
     position: absolute;
     inset:0;
-    background: red;
-    scale: 0.75;
-    border-radius: 50%;
+    scale: 1.5;
     z-index: 1;
 }
 
 .game-grid.head.food::after {
     opacity: 0;
+}
+
+#start {
+    margin: 1em;
+    scale: 2;
 }
