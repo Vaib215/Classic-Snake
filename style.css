@@ -1,0 +1,75 @@
+*,*::after,*::before{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    color: #fff;
+}
+
+.container{
+    text-align: center;
+    border: 1px solid white;
+    border-radius: 4px;
+    height: 90vh;
+    width: 80vh;
+    padding: 0 1em;
+}
+
+.game-container{
+    display: grid;
+    grid-template-columns: repeat(var(--scale), 1fr);
+    grid-template-rows: repeat(var(--scale), 1fr);
+    width: 100%;
+    aspect-ratio: 1;
+}
+
+.game-grid {
+    background: #fff;
+}
+
+.game-grid.head, .game-grid.food{
+    position: relative;
+}
+
+.game-grid.head::after{
+    content: '';
+    position: absolute;
+    background-color: #fff;
+    inset:0;
+    z-index: -1;
+}
+
+.game-grid.head::before{
+    content:'* *';
+    border-radius: 50% 50% 0 0;
+    background: #666;
+    position: absolute;
+    inset: 0;
+}
+
+.game-grid.body{
+    background-color: #666;
+    z-index: 2;
+    border-radius: 8px;
+}
+
+.game-grid.food::after{
+    content: '';
+    position: absolute;
+    inset:0;
+    background: red;
+    scale: 0.75;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.game-grid.head.food::after {
+    opacity: 0;
+}
